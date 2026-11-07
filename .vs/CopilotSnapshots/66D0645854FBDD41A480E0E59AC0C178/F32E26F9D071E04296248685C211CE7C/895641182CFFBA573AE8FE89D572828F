@@ -1,0 +1,74 @@
+﻿using UnityEngine;
+using UnityEngine.InputSystem;
+
+public class PlayerController : MonoBehaviour
+{
+    public CharacterController controller;
+    public InputAction moveAction;
+    public Rigidbody rb;
+    public float moveSpeed = 5f;
+    public Transform cameraTransform;
+    public float mouseSensitivity = 0.1f;
+    public float minCameraPitch = -80f;
+    public float maxCameraPitch = 80f;
+
+    private float cameraPitch;
+
+    void Awake()
+    {
+        rb = GetComponent<Rigidbody>();
+
+        if (cameraTransform == null && Camera.main != null)
+        {
+            cameraTransform = Camera.main.transform;
+        }
+    }
+
+    void Start()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+
+    void OnEnable()
+    {
+        moveAction.Enable();
+    }
+
+    void OnDisable()
+    {
+        moveAction.Disable();
+    }
+
+    void Update()
+    {
+        RotateWithMouse();
+
+        Vector3 inputVector = moveAction.ReadValue<Vector3>();
+        Vector3 move = transform.right * inputVector.x + transform.forward * inputVector.y;
+        controller.Move(move * moveSpeed * Time.deltaTime);
+    }
+
+    private void RotateWithMouse()
+    {
+        if (Mouse.current == null)
+        {
+            return;
+        }
+
+        Vector2 mouseDelta = Mouse.current.delta.ReadValue();
+        transform.Rotate(Vector3.up, mouseDelta.x * mouseSensitivity);
+
+        if (cameraTransform == null)
+        {
+            return;
+        }
+
+        cameraPitch = Mathf.Clamp(
+            cameraPitch - mouseDelta.y * mouseSensitivity,
+            minCameraPitch,
+            maxCameraPitch);
+
+        cameraTransform.localRotation = Quaternion.Euler(cameraPitch, 0f, 0f);
+    }
+}
