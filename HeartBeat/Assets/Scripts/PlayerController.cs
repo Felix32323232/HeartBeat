@@ -7,6 +7,8 @@ public class PlayerController : MonoBehaviour
     public Transform cameraTransform;  
     public InputAction moveAction;
     public InputAction lookAction;
+    public InputAction HeartBeat;
+
     public float moveSpeed = 5f;
     public float mouseSensitivity = 0.1f;
     public float maxPitch = 80f;
@@ -23,12 +25,14 @@ public class PlayerController : MonoBehaviour
     {
         moveAction.Enable();
         lookAction.Enable();
+        HeartBeat.Enable();
     }
 
     void OnDisable()
     {
         moveAction.Disable();
         lookAction.Disable();
+        HeartBeat.Disable(); 
     }
 
     void Update()
